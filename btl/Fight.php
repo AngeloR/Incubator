@@ -11,7 +11,16 @@
  *
  * At the end you'll know who was the fight->winner() and fight->loser().
  *
- * To calculate the fight->attack()
+ * To calculate the attack damage, fight->attack() calls fight->calculateDamage()
+ * with an attacker and then applies it to the others hp. To modify attack/defence
+ * formulas modify calculateDamage and it will affect everything.
+ *
+ * Calculating critical hit is done in fight->wasCritical() and then the actual
+ * damage modifier is in fight->calculateDamage().
+ *
+ * A player can "flee" by calling fight->flee() and if the player managed to
+ * fight->escaped() then they get out of the battle. If they failed to fight->flee()
+ * then fight->monsterAttack() happens.
  *
  * @author SupportCon
  */
