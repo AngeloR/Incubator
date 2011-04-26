@@ -35,7 +35,7 @@ class WeditPage {
     }
 
     public static function ListAll() {
-        $sql = 'select * from pages where public_page = 1 order by page_title asc';
+        $sql = 'select * from pages where public_page = 1 order by homepage desc, weight desc, page_title asc';
         return db($sql);
     }
 
@@ -51,9 +51,28 @@ class WeditPage {
 
     }
 
+    /**
+     * Loads the homepage
+     * 
+     * @return mixed Resulset if successful or bool if failed
+     */
     public static function LoadHomePage() {
         $sql = 'select * from pages where homepage = 1 limit 1';
         return db($sql);
+    }
+
+    /**
+     * Set a page as the homepage
+     *
+     * @param string $page
+     * @return bool
+     */
+    public static function DesignateHomePage($page) {
+        $sql = 'update pages set homepage = 0';
+        if(db($sql)) {
+            $sql2 = 'update pages set homepage = 1 where internal_name = "'.$page.'"';
+            return db($sql2);
+        }
     }
 
     /**
@@ -64,8 +83,8 @@ class WeditPage {
      */
     public static function CreatePage(array $page) {
         $page['internal_name'] = self::Munge($page['page_title']);
-        $sql = 'insert into pages (internal_name,page_title,page_description,page_content,page_creator,public_page) values ';
-        $sql .= '("'.$page['internal_name'].'","'.$page['page_title'].'","'.$page['page_description'].'","'.$page['page_content'].'",'.$page['page_creator'].','.$page['public_page'].')';
+        $sql = 'insert into pages (internal_name,page_title,page_description,page_content,page_creator,public_page,weight) values ';
+        $sql .= '("'.$page['internal_name'].'","'.$page['page_title'].'","'.$page['page_description'].'","'.$page['page_content'].'",'.$page['page_creator'].','.$page['public_page'].','.$page['weight'].')';
 
         return db($sql);
     }
@@ -80,7 +99,8 @@ class WeditPage {
         $page['new_internal_name'] = self::Munge($page['page_title']);
         
         $sql = 'update pages set internal_name = "'.$page['new_internal_name'].'",page_title = "'.$page['page_title'].'", page_content = "'.addslashes($page['page_content']).'",';
-        $sql .= 'page_description="'.$page['page_description'].'",page_creator='.$page['page_creator'].',public_page = '.$page['public_page'].' where internal_name = "'.$page['internal_name'].'"';
+        $sql .= 'page_description="'.$page['page_description'].'",page_creator='.$page['page_creator'].',public_page = '.$page['public_page'].',';
+        $sql .= 'weight = '.$page['weight'].' where internal_name = "'.$page['internal_name'].'"';
 
         return db($sql);
     }

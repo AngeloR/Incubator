@@ -209,6 +209,10 @@ h1 {
 #content {
     margin: 10px;
 }
+p {
+    margin-bottom: 1em;
+    line-height: 1.275em;
+}
 #markdown p, #markdown td {
     margin-bottom: 1em;
     font-size: 0.833em;

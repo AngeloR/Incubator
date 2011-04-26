@@ -17,13 +17,13 @@
             </li>
             <?php if(isset($page)): ?>
                 <li>
-                    <a href="<?php echo url_for('update',  WeditPage::Munge($page['page_title'])); ?>">Edit
+                    <a href="<?php echo url_for('update', $page['internal_name']); ?>">Edit
                         <span class="help">Edit this page</span>
                     </a>
                 </li>
                 <?php if(request_uri() != '/') : ?>
                     <li>
-                        <a href="<?php echo url_for('page',$page['page_title']); ?>">Delete
+                        <a href="<?php echo url_for('delete',$page['internal_name']); ?>">Delete
                             <span class="help">Delete this page</span>
                         </a>
                     </li>

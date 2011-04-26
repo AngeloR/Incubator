@@ -3,7 +3,8 @@ if(!isset($page)) {
     $page = array(
         'page_title' => '',
         'page_content' => '',
-        'page_description' => ''
+        'page_description' => '',
+        'weight' => 0
     );
 
     $url = url_for('page');
@@ -32,10 +33,24 @@ else {
             </td>
         </tr>
         <tr>
+            <th><label>Page Weight:</label></th>
+            <td>
+                <input type="text" name="weight" value="<?php echo $page['weight']; ?>">
+                <span class="help">The higher a page weight the higher up it appears in the menu.</span>
+            </td>
+        </tr>
+        <tr>
             <th><label>Content: </label></th>
             <td>
                 <textarea name="page_content" class="markdown"><?php echo $page['page_content']; ?></textarea>
                 <span class="help">The content of the page</span>
+            </td>
+        </tr>
+        <tr>
+            <th><label>Make default page: </label></th>
+            <td>
+                <input type="checkbox" name="homepage" value="1"<?php echo ($page['homepage'] == 1)?' checked="checked"':''; ?>>
+                <span class="help">If selected, this page will be new home page.</span>
             </td>
         </tr>
         <tr>

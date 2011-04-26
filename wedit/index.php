@@ -57,8 +57,6 @@ function before($route) {
 }
 
 function page($page = '') {
-    $page = ($page == '')?'default':$page;
-
     if(WeditPage::PageExists($page)) {
         $res = WeditPage::LoadPage($page);
     }
@@ -91,9 +89,13 @@ function create_page_handler() {
     }
 
     $page['page_creator'] = User('user_id');
+    $page['weight'] = (!is_numeric($page['weight']))?0:$page['weight'];
 
     if(WeditPage::CreatePage($page)) {
         app_success('Your page has been created!');
+        if(array_key_exists('homepage',$page)) {
+            WeditPage::DesignateHomePage(WeditPage::Munge($page['page_title']));
+        }
         redirect_to('page',  WeditPage::Munge($page['page_title']));
     }
     else {
@@ -115,13 +117,39 @@ function update_page($page) {
 function update_page_handler($p) {
     $page = get_route_options(true);
     $page['page_creator'] = User('user_id');
-    if(WeditPage::UpdatePage($page)) {
-        return page(WeditPage::Munge($page['page_title']));
+    $page['weight'] = (!is_numeric($page['weight']))?0:$page['weight'];
+    if(array_key_exists('homepage',  $page)) {
+        if(!WeditPage::DesignateHomePage(WeditPage::Munge($page['page_title']))) {
+            app_error('There was a problem setting this page as the default.');
+            return update_page($page['internal_name']);
+        }
+        redirect_to('/');
     }
     else {
-        app_error('There was a problem updating your page.');
-        return update_page($page['internal_name']);
+        if(WeditPage::UpdatePage($page)) {
+            return page(WeditPage::Munge($page['page_title']));
+        }
+        else {
+            app_error('There was a problem updating your page.');
+            return update_page($page['internal_name']);
+        }
     }
+}
+
+function delete_page($page) {
+    $info = WeditPage::LoadPage($page);
+    set('page_title','Deleting: '.$info[0]['page_title']);
+    set('page',$info[0]);
+    return render('partial/confirm.html.php');
+}
+
+function delete_page_handler($page) {
+    if(WeditPage::DeletePage($page)) {
+        app_success('The page was deleted.');
+        redirect_to('/');
+    }
+    app_error('There was a problem deleting that page.');
+    return delete_page($page);
 }
 
 function user_login() {
