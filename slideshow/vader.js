@@ -20,22 +20,11 @@
         return {
             notify: function(event,args) {
                 if(catchall[event]) {
-                    if(catchall[event].scope) {
-                        catchall[event].callback.apply(catchall[event].scope,[args]);
-                    }
-                    else {
-                        console.log(catchall);
-                        catchall[event].callback.call(args);
-                    }
+                    catchall[event].callback.apply(catchall[event].scope,[args]);
                 }
                 else {
                     for(i in commands[event]) {
-                        if(commands[event][i].scope) {
-                            commands[event][i].callback.apply(commands[event][i].scope,[args])
-                        }
-                        else {
-                            commands[event][i].callback.call(args);
-                        }
+                        commands[event][i].callback.apply(commands[event][i].scope,[args])
                     }
                 }
             }
@@ -69,23 +58,6 @@
 
 })();
 
-/*
-NOBI EXAMPLE
-setInterval(nobi.notify,1000,'dom-ready');
-setTimeout(function() {
-    nobi.intercept('dom-ready', function() {
-        console.log(+new Date()+' by nobi intercept',this);
-        nobi.clear('dom-ready');
-    },nobi);
-}, 5000);
-
-nobi.bind('dom-ready', function() {
-    console.log(+new Date()+' by nobi bind',this);
-},this);
-*/
-
-
-
 /**
  * The sandbox object allows for modular development. By creating "modules" we can
  * add/remove features at will, WHEN THE GAME IS LIVE, without breaking anything.
@@ -107,7 +79,7 @@ window.sandbox = window.sandbox || (function(){
                 nobi.notify('sandbox-module-registered',module);
 
                 if(implementation.initialize !== undefined) {
-                    implementation.initialize.call();
+                    implementation.initialize.call(implementation);
                 }
             }
             else {
@@ -152,6 +124,11 @@ window.util = window.util || {
     , clone: function(source) {
         return this.extend({},source);
     }
+    , each: function(obj,callback) {
+        for(i in obj) {
+            callback(i,obj[i]);
+        }
+    }
     , KEYS: {
         ENTER: 13
         , SHIFT: 16
@@ -164,18 +141,44 @@ window.util = window.util || {
 };
 
 /**
+ * The dom object allows us to decouple our reliance on a particular javascript
+ * library. In this way we can modify a single object in our game and leave every
+ * other module unaffected.
+ *
+ * Dom will serve as a simple wrapper for the moment, but at later times some
+ * of these may be re-written for speed concerns.
+ */
+window.dom = window.dom || {
+    event: {
+        bind: function(el,event,callback) {
+            $(el).bind(event,callback);
+        }
+        , unbind: function(el,event,callback) {
+            $(el).unbind(event,callback);
+        }
+        , live: function(el,event,callback) {
+            $(el).live(event,callback);
+        }
+        , die: function(el,event,callback) {
+            $(el).die(event,callback);
+        }
+    }
+}
+
+/**
  * Sample keypress module.
  *
  * This module will probably need a bit of work, but right now it handles all
  * keypresses and maps them to the appropriate functions. If this module ever fails
- * NO keypresses will work.
+ * NO keypresses will work, but the user will not receive any error messages, nor
+ * will anything unexpected happen.
  */
 sandbox.register_module('keylogger', util.extend({
     title: 'keylogger'
     , keys: {}
     , description: 'Figures out which keys were pressed and sends the appropriate notification.'
     , initialize: function(){
-        $('body').keyup(function(e) {
+        dom.event.bind('body','keyup',function(e) {
             nobi.notify('keylogger-action-key', e);
         });
         nobi.bind('keylogger-action-key',sandbox.request_module('keylogger').keyup_handler,sandbox.request_module('keylogger'));
@@ -211,7 +214,7 @@ sandbox.register_module('keylogger', util.extend({
 
         console.log(this.keys[key]);
 
-        $.each(this.keys[key], function(i,obj) {
+        util.each(this.keys[key], function(i,obj) {
             obj.callback.apply(obj.scope,[e]);
         });
     }
@@ -227,17 +230,49 @@ sandbox.register_module('keylogger', util.extend({
  */
 sandbox.register_module('chat',util.extend({
     title: 'chat'
+    , el: null
     , initialize: function() {
-        sandbox.request_module('keylogger').watch(util.KEYS.ENTER, function(e) {
-            nobi.intercept('keylogger-action-key', function(e) {
-                if(e.which !== util.KEYS.ESCAPE && e.which !== util.KEYS.ENTER) {
-                    console.log(String.fromCharCode(e.which));
-                }
-                else {
-                    nobi.clear('keylogger-action-key');
-                }
-            });
-        }, this);
+        this.render();      // create chat dom
+        this.events();      // bind events
+    }
+    , render: function() {
+        this.el = '';
+    }
+    , events: function() {
+        // bind to internal message received
+        nobi.bind('chat-message-received', this.displayMessage, this)
+
+        dom.event.bind(this.el,'focus',function(e) {
+            sandbox.request_module('keylogger').watch(util.KEYS.ENTER, function(e) {
+                nobi.intercept('keylogger-action-key', this.capture(e));
+            }, this);
+        });
+
+        dom.event.bind(this.el,'blur',function(e) {
+            nobi.clear('keylogger-action-key');
+        });
+    }
+    , capture: function(e) {
+        console.log(String.fromCharCode(e.which));
+        nobi.clear('keylogger-action-key');
+        var message;
+        
+        if(e.which === util.KEYS.ENTER) {
+            message = this.el.value;
+            this.el.value = '';
+
+            var messageObj = {
+
+            }
+            this.send(messageObj);
+            this.displayMessage(messageObj);
+        }
+    }
+    , send: function(messageObj) {
+        // send via socket.io
+    }
+    , displayMessage: function(messageObj) {
+
     }
 },sandbox.module));
 
@@ -282,8 +317,10 @@ sandbox.register_module('window',util.extend({
     }
 },sandbox.module));
 
-
-
+/**
+ * Basically, if these pass you know that everything is working. If you get ANY
+ * errors during testing, it could be a fault of: nobi, dom, util or sandbox.
+ */
 var inventory = util.clone(sandbox.request_module('window'));
 inventory.create({
     title: 'inventory window'
@@ -301,7 +338,7 @@ skills.create({
 var help = util.clone(sandbox.request_module('window'));
 help.create({
     title: 'help window'
-    , keycode: [util.KEYS.FORWARD_SLASH]
+    , keycode: util.KEYS.FORWARD_SLASH
     , shiftKey: true
 }).render();
 
