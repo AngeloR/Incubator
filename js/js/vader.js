@@ -424,7 +424,7 @@ sandbox.register_module('mob', util.extend({
     , description: 'Manages monsters on the screen'
     , monsters: {}
     , initialize: function() {
-
+        
     }
     , definition: function() {
         return {
@@ -432,6 +432,9 @@ sandbox.register_module('mob', util.extend({
             , start: [0,0]          // Top, Left
             , speed: 3              // movement speed
         };
+    }
+    , intersect: function(definition1,definition2) {
+        
     }
     , create: function(name,symbol,definition) {
         var span = document.createElement('span');
@@ -465,54 +468,52 @@ sandbox.register_module('mob', util.extend({
             , top = +(definition.dom.style.top.split('px')[0])
             , left = +(definition.dom.style.left.split('px')[0]);
 
-            console.log(max_pos);
-
         switch(dir) {
             case 0:
-                console.log(definition,'north');
                 if((top-step) > max_pos.n && top-step >= 0) {
                     definition.dom.style.top = (top-step)+'px';
+                    notify('mob-movement',definition);
                 }
                 break;
 
             case 1:
-                console.log(definition,'east');
-                if((left+step) < max_pos.e) {
+                if((left+step) < max_pos.e && (left+step) < $(window).width()) {
                     definition.dom.style.left = (left+step)+'px';
+                    notify('mob-movement',definition);
                 }
                 break;
 
             case 2:
-                console.log(definition,'south');
-                if((top+step) < max_pos.s) {
+                if((top+step) < max_pos.s && (left+step) < $(window).width()) {
                     definition.dom.style.top = (top+step)+'px';
+                    notify('mob-movement',definition);
                 }
                 break;
 
             case 3:
-                console.log(definition,'west');
                 if((left-step) > max_pos.w && left-step >= 0) {
                     definition.dom.style.left = (left-step)+'px';
+                    notify('mob-movement',definition);
                 }
                 break;
         }
     }
 }, sandbox.module));
 
-
-var rat = sandbox.request_module('mob').create(
-    'Rat', 'r', util.extend({
-        movement: [10,10,10,10]
-        , start: [35,165]
-        , speed: 0.5
-    }, sandbox.request_module('mob').definition)
-);
-
+for(var i = 0; i < 1000; i++) {
+    sandbox.request_module('mob').create(
+        'Rat', '<img src="person.png">', util.extend({
+            movement: [Math.random()*i,Math.random()*i,Math.random()*i,Math.random()*i]
+            , start: [Math.random()*$(window).width()-10,Math.random()*$(window).height()-10]
+            , speed: 0.5
+        }, sandbox.request_module('mob').definition)
+    );
+}
 
 /**
  * Basically, if these pass you know that everything is working. If you get ANY
  * errors during testing, it could be a fault of: nobi, dom, util or sandbox.
- */
+ *
 var inventory = util.clone(sandbox.request_module('window'));
 inventory.create({
     title: 'inventory window'
@@ -553,7 +554,7 @@ socket.on('message', function(msg){
 
 socket.on('disconnect', function(){
     nobi.notify('socket-disconnect');
-});*/
+});
 
 // async tests
 // async.get
@@ -564,4 +565,4 @@ async.get({url: 'index.php'}, function(data) {
 
 async.post({url: 'index.php', data: {field_name: 'field_value', field_name_2: 'field_value_2'}}, function(data) {
     console.log(JSON.parse(data));
-});
+});*/
