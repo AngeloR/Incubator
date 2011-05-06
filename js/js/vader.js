@@ -1,3 +1,4 @@
+
 (function(){
 
     /**
@@ -135,16 +136,44 @@ window.util = window.util || {
         , SHIFT: 16
         , ESCAPE: 27
         , FORWARD_SLASH: 191
+        , ARROW_DOWN: 40
+        , ARROW_UP: 38
+        , ARROW_LEFT: 37
+        , ARROW_RIGHT: 39
+        , A: 65
+        , B: 66
+        , C: 67
+        , D: 68
+        , E: 69
+        , F: 70
+        , G: 71
+        , H: 72
         , I: 73
         , J: 74
         , K: 75
+        , L: 76
+        , M: 77
+        , N: 78
+        , O: 79
+        , P: 80
+        , Q: 81
+        , R: 82
+        , S: 83
+        , T: 84
+        , U: 85
+        , V: 86
+        , W: 87
+        , X: 88
+        , Y: 89
+        , Z: 90
     }
 };
 
 /**
  * Instead of bringing in an entirely new library to handle asynchronous calls to
  * the server, I opted to write a quick little async window.async method. I want
- * it available to everyone.
+ * it available to everyone, so it exists as a global.
+ */
 window.async = window.async || (function(){
     var default_opt = {
             url: '/'
@@ -272,7 +301,7 @@ sandbox.register_module('keylogger', util.extend({
             key = agnostic;
         }
         else {
-            return ;
+            return;
         }
 
         console.log(this.keys[key]);
@@ -389,6 +418,96 @@ sandbox.register_module('window',util.extend({
         }
     }
 },sandbox.module));
+
+sandbox.register_module('mob', util.extend({
+    title: 'Monster Manager'
+    , description: 'Manages monsters on the screen'
+    , monsters: {}
+    , initialize: function() {
+
+    }
+    , definition: function() {
+        return {
+            movement: [0,0,0,0]     // North, South, East West
+            , start: [0,0]          // Top, Left
+            , speed: 3              // movement speed
+        };
+    }
+    , create: function(name,symbol,definition) {
+        var span = document.createElement('span');
+        span.innerHTML = symbol || 'x';
+        span.className = 'mob';
+        span.style.position = 'absolute';
+        span.style.top = definition.start[1]+'px'
+        span.style.left = definition.start[0]+'px'
+        definition.dom = span;
+
+        if(!this.monsters[name]) {
+            this.monsters[name] = [];
+        }
+
+        this.monsters[name].push(definition);
+        setInterval(this.move,definition.speed*1000,definition);
+
+        document.getElementsByTagName('body')[0].appendChild(span);
+
+        return this.monsters[name].length-1;
+    }
+    , move: function(definition) {
+        var dir = Math.floor(Math.random()*5)
+            , max_pos = {
+                n: definition.start[1]-definition.movement[0]
+                , e: definition.start[0]+definition.movement[1]
+                , s: definition.start[1] + definition.movement[2]
+                , w: definition.start[0]- definition.movement[3]
+            }
+            , step = definition.step || 5
+            , top = +(definition.dom.style.top.split('px')[0])
+            , left = +(definition.dom.style.left.split('px')[0]);
+
+            console.log(max_pos);
+
+        switch(dir) {
+            case 0:
+                console.log(definition,'north');
+                if((top-step) > max_pos.n && top-step >= 0) {
+                    definition.dom.style.top = (top-step)+'px';
+                }
+                break;
+
+            case 1:
+                console.log(definition,'east');
+                if((left+step) < max_pos.e) {
+                    definition.dom.style.left = (left+step)+'px';
+                }
+                break;
+
+            case 2:
+                console.log(definition,'south');
+                if((top+step) < max_pos.s) {
+                    definition.dom.style.top = (top+step)+'px';
+                }
+                break;
+
+            case 3:
+                console.log(definition,'west');
+                if((left-step) > max_pos.w && left-step >= 0) {
+                    definition.dom.style.left = (left-step)+'px';
+                }
+                break;
+        }
+    }
+}, sandbox.module));
+
+
+var rat = sandbox.request_module('mob').create(
+    'Rat', 'r', util.extend({
+        movement: [10,10,10,10]
+        , start: [35,165]
+        , speed: 0.5
+    }, sandbox.request_module('mob').definition)
+);
+
 
 /**
  * Basically, if these pass you know that everything is working. If you get ANY
