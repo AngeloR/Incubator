@@ -378,10 +378,12 @@ sandbox.register_module('chat',util.extend({
     }
 },sandbox.module));
 
+
+
 /**
  * Will use this to flesh out the various windows. Check out below to see how
  * various versions can exist.
- */
+ *
 
 sandbox.register_module('window',util.extend({
     title: 'window'
@@ -415,6 +417,23 @@ sandbox.register_module('window',util.extend({
                 div.style.display = (div.style.display === 'none')?'inline-block':'none';
                 console.log(this.opt.title);
             }, this)
+        }
+    }
+},sandbox.module));
+/*
+sandbox.register_module('movement', util.extend({
+    title: 'Movement Manager'
+    , description: 'Handles all movement related tasks'
+    , move_x: function(dir) {
+
+    }
+    , move_y: function(dir) {
+
+    }
+    , within_viewport: function(x,y) {
+        var pass = true;
+        if(x >= 0 && < x <= dom.find(window).width()) {
+
         }
     }
 },sandbox.module));
@@ -514,6 +533,9 @@ for(var i = 0; i < 1000; i++) {
  * Basically, if these pass you know that everything is working. If you get ANY
  * errors during testing, it could be a fault of: nobi, dom, util or sandbox.
  *
+
+
+
 var inventory = util.clone(sandbox.request_module('window'));
 inventory.create({
     title: 'inventory window'
