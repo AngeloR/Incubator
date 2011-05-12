@@ -19,6 +19,7 @@ return array(
             'name' => ''
         ),
     ),
+    'session' => 'noteappsess',
     'use_db' => 'db.dev',
     'theme' => 'default',
     'view_path' => 'views/themes',

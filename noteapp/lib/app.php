@@ -82,8 +82,11 @@ function db($sql,$c = null) {
             $res = ($c === null)?mysql_affected_rows():mysql_affected_rows($c);
         }
     }
-    if($q) {
+    if($q && strpos(strtolower($sql),'select') === 0) {
         return $res;
+    }
+    else if($q) {
+        return true;
     }
     else {
         die(mysql_error());
@@ -92,6 +95,10 @@ function db($sql,$c = null) {
 
 function force($something,$newvalue) {
     return (empty($something))?$newvalue:$something;
+}
+
+function pw_hash($val) {
+    return sha1(md5('3418nf').$val.md5($val));
 }
 
 function appinit() {
