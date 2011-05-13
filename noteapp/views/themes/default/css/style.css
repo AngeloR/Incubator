@@ -48,6 +48,7 @@ body {
 a {
     color: #668FC2;
     text-decoration: underline;
+    font-weight: bold;
 }
 ol, ul {
 	list-style: none;
@@ -70,10 +71,11 @@ h1,h2,h3,h4,h5,h6 {
     text-shadow: 0px 1px 1px rgba(255,255,255,0.4);
 }
 h1 {
-    font-size: 0.833em;
+    font-size: 1.833em;
 }
 h2 {
     padding: 5px;
+    padding-left: 0px;
     font-size: 1.2em;
 }
 input,textarea {
@@ -92,11 +94,61 @@ input,textarea {
     border-bottom-width: 1px;
     position: relative;
 }
-#search {
+#topbar {
+    text-align: right;
+}
+#search-container {
     position: absolute;
-    right: 10px;
+    right: 25px;
     top: 10px;
-    width: 200px;
+}
+#search {
+    width: 250px;
+}
+#search:focus {
+    outline: none;
+    border-color: #747474;
+}
+#search-results {
+    color: #333;
+    background-color: #fff;
+    width: 250px;
+    max-width: 250px;
+    border: solid 1px #747474;
+    position: absolute;
+    top: 30px;
+    -webkit-box-shadow: 0px 0px 3px rgba(0,0,0,0.4);
+    display: none;
+}
+#search-results li {
+    display: block;
+}
+#search-results li a{
+    padding: 10px 5px;
+    display: block;
+    height: auto;
+    width: auto;
+    text-align: left;
+    border: solid 0px #edefed;
+    border-bottom-width: 1px;
+}
+#search-results li a:last-child {
+    border-bottom-width: 0px;
+}
+#search-results li a:hover {
+    background-color: #E0ECFA;
+    border-bottom-color: #747474;
+}
+#logo {
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    height: 59px;
+}
+#logo img {
+    vertical-align: middle;
+    width: 64px;
+    height: 64px;
 }
 #sidebar {
     background-color: #E0ECFA;
@@ -106,6 +158,9 @@ input,textarea {
     border-right-width: 1px;
     position: relative;
 }
+#nav {
+    overflow: auto;
+}
 #nav li a {
     color: #747474;
     display: block;
@@ -114,6 +169,8 @@ input,textarea {
     text-decoration: none;
     font-weight: bold;
     letter-spacing: 0.2em;
+    line-height: 1.2em;
+    overflow-x: hidden;
 }
 .helptext {
     display: block;
@@ -160,6 +217,11 @@ input,textarea {
 }
 #actions a:hover {
     background-color: #f3f4f3;
+}
+#logout-action {
+    position: absolute;
+    left: 0px;
+    border-width: 0px 1px 0px 0px !important;
 }
 #content {
     float: left;
@@ -364,13 +426,13 @@ button:disabled, button:hover:disabled {
     -webkit-border-topleft-radius: 4px;
     -webkit-border-topright-radius: 4px;
 }
-#sections li{
+.topbar li{
     display: inline-block;
     margin-right: 1px;
     margin-left: 1px;
 }
 
-#sections li a{
+.topbar li a{
     display: inline-block;
     height: 70px;
     width: 100px;
@@ -378,14 +440,14 @@ button:disabled, button:hover:disabled {
     text-shadow: 0px 1px 0px rgba(255,255,255,0.5);
     text-decoration: none;
     font-weight: bold;
-    padding-top: 15px;
+    padding-top: 10px;
     text-align: center;
 }
-#sections li img {
+.topbar li img {
     display: block;
     margin: 0px auto 5px;
 }
-#sections li#selected-settings {
+.topbar li#selected-settings {
     background-image: -webkit-gradient(linear,left top,left bottom, from(#DFE4E7), to(#B5BABD));
     border: solid 0px #747474;
     border-width: 0px 1px;
@@ -406,6 +468,10 @@ button:disabled, button:hover:disabled {
 #settings-content div h2 {
     font-size: 1.4em;
     font-weight: bold;
+}
+#settings-content p {
+    margin-bottom: 1.2em;
+    line-height: 1.2em;
 }
 
 #settings-content div th {

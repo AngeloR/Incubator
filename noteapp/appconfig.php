@@ -12,6 +12,12 @@ return array(
             'pass' => '',
             'name' => 'ntoeapp'
         ),
+        'dev2' => array(
+            'host' => 'localhost',
+            'user' => 'root',
+            'pass' => 'root',
+            'name' => 'notepadd'
+        ),
         'prod' => array(
             'host' => 'localhost',
             'user' => 'root',

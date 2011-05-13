@@ -17,8 +17,8 @@ function before() {
     
     if(!array_key_exists(appconfig('session'),$_SESSION) || empty($_SESSION[appconfig('session')])) {
         set('THEME',appconfig('theme'));
-        set('THEMEDIR','views/themes/'.appconfig('theme'));
-        option('views_dir','views/themes/'.appconfig('theme'));
+        set('THEMEDIR','views');
+        option('views_dir','views/');
 
         layout('layout.html.php');
     }
@@ -94,8 +94,11 @@ function signup() {
                 $res = db($sql);
                 $res = $res[0];
 
+                // set default settings
                 $sql = 'insert into settings (user_id) values ('.$res['user_id'].')';
                 db($sql);
+
+                // set up default note
                 return login($email,$password);
             }
         }
@@ -143,12 +146,15 @@ function add_note() {
 
     if(array_key_exists('note_id',$_POST) && $_POST['note_id'] !== '') {
         $note_id = mysql_real_escape_string($_POST['note_id']);
-        $sql = 'update notes set note_title = "'.$note_title.'", note_description = "'.$note_desc.'", note_text = "'.$note_text.'", created_time = '.$created_time.' where note_id = '.$note_id.' and user_id = '.Session::Attr('user_id');
+        return update_note(array(
+            'note_id' => $note_id,
+            'note_title' => $note_title,
+            'note_desc' => $note_desc,
+            'note_text' => $note_text
+        ));
     }
-    else {
-        $sql = 'insert into notes (note_title,note_description,note_text,created_time,user_id) values ("'.$note_title.'","'.$note_desc.'","'.$note_text.'",'.$created_time.','.Session::Attr('user_id').')';
-    }
-    
+    $sql = 'insert into notes (note_title,note_description,note_text,created_time,user_id) values ("'.$note_title.'","'.$note_desc.'","'.$note_text.'",'.$created_time.','.Session::Attr('user_id').')';
+
     if(db($sql)) {
         $sql = 'select note_id from notes where user_id = '.Session::Attr('user_id').' order by note_id desc limit 1';
         return json(array('status'=>'success','data'=>db($sql)));
@@ -156,6 +162,20 @@ function add_note() {
     else {
         return json(array('status'=>'fail'));
     }
+}
+
+function update_note($note) {
+    $sql = 'update notes set note_title = "'.$note['note_title'].'", note_description = "'.$note['note_desc'].'", note_text = "'.$note['note_text'].'" where note_id = '.$note['note_id'].' and user_id = '.Session::Attr('user_id');
+
+    if(db($sql)) {
+        return json(array(
+            'status' => 'success',
+            'data' => array(array('note_id' => $note['note_id']))
+        ));
+    }
+    return json(array(
+        'status' => 'failed'
+    ));
 }
 
 function preview($note_id) {
@@ -170,14 +190,28 @@ function preview($note_id) {
     return json(array('status' => 'succes', 'data' => $res));
 }
 
+function search($terms) {
+    $text = mysql_real_escape_string($terms);
+    require_once('lib/search.class.php');
+
+    $sql = 'select note_id, note_title from notes where user_id = '.Session::Attr('user_id').' and '.Search::create_sql($text);
+
+    return json(array(
+        'status' => 'success',
+        'data' => db($sql)
+    ));
+}
+
 dispatch_get('/','home');
 
 dispatch_get('/app','home');
+
 dispatch_get('/notes','note_list');
-dispatch_get('/notes/:id','note_info');
-dispatch_post('/preview/','preview');
-dispatch_delete('/notes/:id','delete_note');
 dispatch_post('/notes','add_note');
+dispatch_get('/notes/:id','note_info');
+dispatch_delete('/notes/:id','delete_note');
+dispatch_post('/preview','preview');
+dispatch_get('/search/:terms','search');
 
 dispatch_post('/login','login');
 dispatch_post('/signup','signup');

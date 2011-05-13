@@ -29,6 +29,12 @@
                             Account
                         </a>
                     </li>
+                    <li>
+                        <a href="#">
+                            <img src="/incubator/noteapp/<?php echo $THEMEDIR; ?>/images/icons/info.png">
+                            About
+                        </a>
+                    </li>
                 </ul>
             </div>
             <div id="settings-content">
@@ -104,22 +110,42 @@
                         </table>
                     </form>
                 </div>
+
+                <div id="about">
+                    <h2>About NoteApp</h2>
+                    <p>NoteApp was created as a way to easily store notes online. I normally end up taking a lot of notes on
+                        various projects and I needed a place that I could organize them.</p>
+                    <p>If this app doesn't quite cut it for you check out <a href="http://evernote.com">Evernote</a>. I used Evernote
+                        for some time before I decided it was overkill for what I wanted.</p>
+                    <p>If you want to support NoteApp, spread the word. NoteApp is currently paid for by a little advertisement
+                        in the header of the page.</p>
+                    <p><b>Thanks! </b> - Angelo Rodrigues
+                        <a href="http://xangelo.ca">http://xangelo.ca</a>
+                        <a href="http://twitter.com/xangelo">@xangelo</a>
+                        <a href="http://twitter.com/noteapp">@noteapp</a>
+                    </p>
+                </div>
             </div>
         </div>
         
 
         <!-- START OF APP -->
         <div id="topbar" class="topbar">
+            <h1 id="logo"><img src="../views/images/noteapp.png" alt="NoteApp by Angelo" width="64" height="64">NoteApp</h1>
             <div id="search-container">
                 <form action="" method="post">
-                    <input type="text" name="search" id="search">
+                    <input type="text" name="search" id="search" placeholder="Search">
                 </form>
+                <ul id="search-results">
+                    
+                </ul>
             </div>
         </div>
         <div id="sidebar">
             <ul id="nav"></ul>
             <div id="actions">
-                <a href="#" id="settings-action"><img src="<?php echo $THEMEDIR; ?>/images/icons/cog.png"></a><a href="#" id="new-note"><img src="<?php echo $THEMEDIR; ?>/images/icons/add.png"></a>
+                <a href="#" id="logout-action"><img src="/incubator/noteapp/<?php echo $THEMEDIR; ?>/images/icons/lock.png"></a>
+                <a href="#" id="settings-action"><img src="/incubator/noteapp/<?php echo $THEMEDIR; ?>/images/icons/cog.png"></a><a href="#" id="new-note"><img src="/incubator/noteapp/<?php echo $THEMEDIR; ?>/images/icons/add.png"></a>
             </div>
         </div>
         <div id="content">
