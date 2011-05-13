@@ -486,3 +486,22 @@ sandbox.register_module('settings', util.extend({
         });
     }
 }, sandbox.module));
+
+
+sandbox.register_module('keyboard-shortcuts', util.extend({
+    title: 'Keyboard Shortcuts'
+    , description: 'Adds keyboard shortcuts to the system'
+    , initialize: function() {
+        shortcut.add('Ctrl+Space', function(){
+            $('#search').focus();
+        });
+
+        shortcut.add('Esc', function(){
+            $('*:focus').blur();
+        });
+
+        shortcut.add('Ctrl+Alt+N', function(){
+            sandbox.request_module('ns').new_note();
+        });
+    }
+},sandbox.module));

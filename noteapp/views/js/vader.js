@@ -297,207 +297,226 @@ sandbox.register_module('keylogger', util.extend({
     }
 }, sandbox.module));
 
-function get_html_translation_table (table, quote_style) {
-    // http://kevin.vanzonneveld.net
-    // +   original by: Philip Peterson
-    // +    revised by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-    // +   bugfixed by: noname
-    // +   bugfixed by: Alex
-    // +   bugfixed by: Marco
-    // +   bugfixed by: madipta
-    // +   improved by: KELAN
-    // +   improved by: Brett Zamir (http://brett-zamir.me)
-    // +   bugfixed by: Brett Zamir (http://brett-zamir.me)
-    // +      input by: Frank Forte
-    // +   bugfixed by: T.Wild
-    // +      input by: Ratheous
-    // %          note: It has been decided that we're not going to add global
-    // %          note: dependencies to php.js, meaning the constants are not
-    // %          note: real constants, but strings instead. Integers are also supported if someone
-    // %          note: chooses to create the constants themselves.
-    // *     example 1: get_html_translation_table('HTML_SPECIALCHARS');
-    // *     returns 1: {'"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;'}
-    var entities = {},
-        hash_map = {},
-        decimal = 0,
-        symbol = '';
-    var constMappingTable = {},
-        constMappingQuoteStyle = {};
-    var useTable = {},
-        useQuoteStyle = {};
+/**
+ * http://www.openjs.com/scripts/events/keyboard_shortcuts/
+ * Version : 2.01.B
+ * By Binny V A
+ * License : BSD
+ */
+shortcut = {
+	'all_shortcuts':{},//All the shortcuts are stored in this array
+	'add': function(shortcut_combination,callback,opt) {
+		//Provide a set of default options
+		var default_options = {
+			'type':'keydown',
+			'propagate':false,
+			'disable_in_input':false,
+			'target':document,
+			'keycode':false
+		}
+		if(!opt) opt = default_options;
+		else {
+			for(var dfo in default_options) {
+				if(typeof opt[dfo] == 'undefined') opt[dfo] = default_options[dfo];
+			}
+		}
 
-    // Translate arguments
-    constMappingTable[0] = 'HTML_SPECIALCHARS';
-    constMappingTable[1] = 'HTML_ENTITIES';
-    constMappingQuoteStyle[0] = 'ENT_NOQUOTES';
-    constMappingQuoteStyle[2] = 'ENT_COMPAT';
-    constMappingQuoteStyle[3] = 'ENT_QUOTES';
+		var ele = opt.target;
+		if(typeof opt.target == 'string') ele = document.getElementById(opt.target);
+		var ths = this;
+		shortcut_combination = shortcut_combination.toLowerCase();
 
-    useTable = !isNaN(table) ? constMappingTable[table] : table ? table.toUpperCase() : 'HTML_SPECIALCHARS';
-    useQuoteStyle = !isNaN(quote_style) ? constMappingQuoteStyle[quote_style] : quote_style ? quote_style.toUpperCase() : 'ENT_COMPAT';
+		//The function to be called at keypress
+		var func = function(e) {
+			e = e || window.event;
 
-    if (useTable !== 'HTML_SPECIALCHARS' && useTable !== 'HTML_ENTITIES') {
-        throw new Error("Table: " + useTable + ' not supported');
-        // return false;
-    }
+			if(opt['disable_in_input']) { //Don't enable shortcut keys in Input, Textarea fields
+				var element;
+				if(e.target) element=e.target;
+				else if(e.srcElement) element=e.srcElement;
+				if(element.nodeType==3) element=element.parentNode;
 
-    entities['38'] = '&amp;';
-    if (useTable === 'HTML_ENTITIES') {
-        entities['160'] = '&nbsp;';
-        entities['161'] = '&iexcl;';
-        entities['162'] = '&cent;';
-        entities['163'] = '&pound;';
-        entities['164'] = '&curren;';
-        entities['165'] = '&yen;';
-        entities['166'] = '&brvbar;';
-        entities['167'] = '&sect;';
-        entities['168'] = '&uml;';
-        entities['169'] = '&copy;';
-        entities['170'] = '&ordf;';
-        entities['171'] = '&laquo;';
-        entities['172'] = '&not;';
-        entities['173'] = '&shy;';
-        entities['174'] = '&reg;';
-        entities['175'] = '&macr;';
-        entities['176'] = '&deg;';
-        entities['177'] = '&plusmn;';
-        entities['178'] = '&sup2;';
-        entities['179'] = '&sup3;';
-        entities['180'] = '&acute;';
-        entities['181'] = '&micro;';
-        entities['182'] = '&para;';
-        entities['183'] = '&middot;';
-        entities['184'] = '&cedil;';
-        entities['185'] = '&sup1;';
-        entities['186'] = '&ordm;';
-        entities['187'] = '&raquo;';
-        entities['188'] = '&frac14;';
-        entities['189'] = '&frac12;';
-        entities['190'] = '&frac34;';
-        entities['191'] = '&iquest;';
-        entities['192'] = '&Agrave;';
-        entities['193'] = '&Aacute;';
-        entities['194'] = '&Acirc;';
-        entities['195'] = '&Atilde;';
-        entities['196'] = '&Auml;';
-        entities['197'] = '&Aring;';
-        entities['198'] = '&AElig;';
-        entities['199'] = '&Ccedil;';
-        entities['200'] = '&Egrave;';
-        entities['201'] = '&Eacute;';
-        entities['202'] = '&Ecirc;';
-        entities['203'] = '&Euml;';
-        entities['204'] = '&Igrave;';
-        entities['205'] = '&Iacute;';
-        entities['206'] = '&Icirc;';
-        entities['207'] = '&Iuml;';
-        entities['208'] = '&ETH;';
-        entities['209'] = '&Ntilde;';
-        entities['210'] = '&Ograve;';
-        entities['211'] = '&Oacute;';
-        entities['212'] = '&Ocirc;';
-        entities['213'] = '&Otilde;';
-        entities['214'] = '&Ouml;';
-        entities['215'] = '&times;';
-        entities['216'] = '&Oslash;';
-        entities['217'] = '&Ugrave;';
-        entities['218'] = '&Uacute;';
-        entities['219'] = '&Ucirc;';
-        entities['220'] = '&Uuml;';
-        entities['221'] = '&Yacute;';
-        entities['222'] = '&THORN;';
-        entities['223'] = '&szlig;';
-        entities['224'] = '&agrave;';
-        entities['225'] = '&aacute;';
-        entities['226'] = '&acirc;';
-        entities['227'] = '&atilde;';
-        entities['228'] = '&auml;';
-        entities['229'] = '&aring;';
-        entities['230'] = '&aelig;';
-        entities['231'] = '&ccedil;';
-        entities['232'] = '&egrave;';
-        entities['233'] = '&eacute;';
-        entities['234'] = '&ecirc;';
-        entities['235'] = '&euml;';
-        entities['236'] = '&igrave;';
-        entities['237'] = '&iacute;';
-        entities['238'] = '&icirc;';
-        entities['239'] = '&iuml;';
-        entities['240'] = '&eth;';
-        entities['241'] = '&ntilde;';
-        entities['242'] = '&ograve;';
-        entities['243'] = '&oacute;';
-        entities['244'] = '&ocirc;';
-        entities['245'] = '&otilde;';
-        entities['246'] = '&ouml;';
-        entities['247'] = '&divide;';
-        entities['248'] = '&oslash;';
-        entities['249'] = '&ugrave;';
-        entities['250'] = '&uacute;';
-        entities['251'] = '&ucirc;';
-        entities['252'] = '&uuml;';
-        entities['253'] = '&yacute;';
-        entities['254'] = '&thorn;';
-        entities['255'] = '&yuml;';
-    }
+				if(element.tagName == 'INPUT' || element.tagName == 'TEXTAREA') return;
+			}
 
-    if (useQuoteStyle !== 'ENT_NOQUOTES') {
-        entities['34'] = '&quot;';
-    }
-    if (useQuoteStyle === 'ENT_QUOTES') {
-        entities['39'] = '&#39;';
-    }
-    entities['60'] = '&lt;';
-    entities['62'] = '&gt;';
+			//Find Which key is pressed
+			if (e.keyCode) code = e.keyCode;
+			else if (e.which) code = e.which;
+			var character = String.fromCharCode(code).toLowerCase();
 
+			if(code == 188) character=","; //If the user presses , when the type is onkeydown
+			if(code == 190) character="."; //If the user presses , when the type is onkeydown
 
-    // ascii decimals to real symbols
-    for (decimal in entities) {
-        symbol = String.fromCharCode(decimal);
-        hash_map[symbol] = entities[decimal];
-    }
+			var keys = shortcut_combination.split("+");
+			//Key Pressed - counts the number of valid keypresses - if it is same as the number of keys, the shortcut function is invoked
+			var kp = 0;
 
-    return hash_map;
-}
+			//Work around for stupid Shift key bug created by using lowercase - as a result the shift+num combination was broken
+			var shift_nums = {
+				"`":"~",
+				"1":"!",
+				"2":"@",
+				"3":"#",
+				"4":"$",
+				"5":"%",
+				"6":"^",
+				"7":"&",
+				"8":"*",
+				"9":"(",
+				"0":")",
+				"-":"_",
+				"=":"+",
+				";":":",
+				"'":"\"",
+				",":"<",
+				".":">",
+				"/":"?",
+				"\\":"|"
+			}
+			//Special Keys - and their codes
+			var special_keys = {
+				'esc':27,
+				'escape':27,
+				'tab':9,
+				'space':32,
+				'return':13,
+				'enter':13,
+				'backspace':8,
 
-function htmlentities (string, quote_style, charset, double_encode) {
-    // http://kevin.vanzonneveld.net
-    // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-    // +    revised by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-    // +   improved by: nobbler
-    // +    tweaked by: Jack
-    // +   bugfixed by: Onno Marsman
-    // +    revised by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-    // +    bugfixed by: Brett Zamir (http://brett-zamir.me)
-    // +      input by: Ratheous
-    // +   improved by: Rafał Kukawski (http://blog.kukawski.pl)
-    // -    depends on: get_html_translation_table
-    // *     example 1: htmlentities('Kevin & van Zonneveld');
-    // *     returns 1: 'Kevin &amp; van Zonneveld'
-    // *     example 2: htmlentities("foo'bar","ENT_QUOTES");
-    // *     returns 2: 'foo&#039;bar'
-    var hash_map = {},
-        symbol = '',
-        entity = '',
-        self = this;
-    string += '';
-    double_encode = !!double_encode || double_encode == null;
+				'scrolllock':145,
+				'scroll_lock':145,
+				'scroll':145,
+				'capslock':20,
+				'caps_lock':20,
+				'caps':20,
+				'numlock':144,
+				'num_lock':144,
+				'num':144,
 
-    if (false === (hash_map = this.get_html_translation_table('HTML_ENTITIES', quote_style))) {
-        return false;
-    }
-    hash_map["'"] = '&#039;';
+				'pause':19,
+				'break':19,
 
-    if (double_encode) {
-        for (symbol in hash_map) {
-            entity = hash_map[symbol];
-            string = string.split(symbol).join(entity);
-        }
-    } else {
-        string = string.replace(/([\s\S]*?)(&(?:#\d+|#x[\da-f]+|[a-z][\da-z]*);|$)/g, function (ignore, text, entity) {
-            return self.htmlentities(text, quote_style, charset) + entity;
-        });
-    }
+				'insert':45,
+				'home':36,
+				'delete':46,
+				'end':35,
 
-    return string;
+				'pageup':33,
+				'page_up':33,
+				'pu':33,
+
+				'pagedown':34,
+				'page_down':34,
+				'pd':34,
+
+				'left':37,
+				'up':38,
+				'right':39,
+				'down':40,
+
+				'f1':112,
+				'f2':113,
+				'f3':114,
+				'f4':115,
+				'f5':116,
+				'f6':117,
+				'f7':118,
+				'f8':119,
+				'f9':120,
+				'f10':121,
+				'f11':122,
+				'f12':123
+			}
+
+			var modifiers = {
+				shift: { wanted:false, pressed:false},
+				ctrl : { wanted:false, pressed:false},
+				alt  : { wanted:false, pressed:false},
+				meta : { wanted:false, pressed:false}	//Meta is Mac specific
+			};
+
+			if(e.ctrlKey)	modifiers.ctrl.pressed = true;
+			if(e.shiftKey)	modifiers.shift.pressed = true;
+			if(e.altKey)	modifiers.alt.pressed = true;
+			if(e.metaKey)   modifiers.meta.pressed = true;
+
+			for(var i=0; k=keys[i],i<keys.length; i++) {
+				//Modifiers
+				if(k == 'ctrl' || k == 'control') {
+					kp++;
+					modifiers.ctrl.wanted = true;
+
+				} else if(k == 'shift') {
+					kp++;
+					modifiers.shift.wanted = true;
+
+				} else if(k == 'alt') {
+					kp++;
+					modifiers.alt.wanted = true;
+				} else if(k == 'meta') {
+					kp++;
+					modifiers.meta.wanted = true;
+				} else if(k.length > 1) { //If it is a special key
+					if(special_keys[k] == code) kp++;
+
+				} else if(opt['keycode']) {
+					if(opt['keycode'] == code) kp++;
+
+				} else { //The special keys did not match
+					if(character == k) kp++;
+					else {
+						if(shift_nums[character] && e.shiftKey) { //Stupid Shift key bug created by using lowercase
+							character = shift_nums[character];
+							if(character == k) kp++;
+						}
+					}
+				}
+			}
+
+			if(kp == keys.length &&
+						modifiers.ctrl.pressed == modifiers.ctrl.wanted &&
+						modifiers.shift.pressed == modifiers.shift.wanted &&
+						modifiers.alt.pressed == modifiers.alt.wanted &&
+						modifiers.meta.pressed == modifiers.meta.wanted) {
+				callback(e);
+
+				if(!opt['propagate']) { //Stop the event
+					//e.cancelBubble is supported by IE - this will kill the bubbling process.
+					e.cancelBubble = true;
+					e.returnValue = false;
+
+					//e.stopPropagation works in Firefox.
+					if (e.stopPropagation) {
+						e.stopPropagation();
+						e.preventDefault();
+					}
+					return false;
+				}
+			}
+		}
+		this.all_shortcuts[shortcut_combination] = {
+			'callback':func,
+			'target':ele,
+			'event': opt['type']
+		};
+		//Attach the function with the event
+		if(ele.addEventListener) ele.addEventListener(opt['type'], func, false);
+		else if(ele.attachEvent) ele.attachEvent('on'+opt['type'], func);
+		else ele['on'+opt['type']] = func;
+	},
+
+	//Remove the shortcut - just specify the shortcut and I will remove the binding
+	'remove':function(shortcut_combination) {
+		shortcut_combination = shortcut_combination.toLowerCase();
+		var binding = this.all_shortcuts[shortcut_combination];
+		delete(this.all_shortcuts[shortcut_combination])
+		if(!binding) return;
+		var type = binding['event'];
+		var ele = binding['target'];
+		var callback = binding['callback'];
+
+		if(ele.detachEvent) ele.detachEvent('on'+type, callback);
+		else if(ele.removeEventListener) ele.removeEventListener(type, callback, false);
+		else ele['on'+type] = false;
+	}
 }

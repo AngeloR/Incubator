@@ -363,6 +363,16 @@ button:disabled, button:hover:disabled {
 #preview-area h2 {
     font-size: 1.4em;
 }
+#preview-area table {
+    border: solid 1px #aaa;
+}
+#preview-area th {
+    font-weight: bold;
+}
+#preview-area td, #preview-area th {
+    padding: 4px;
+    border: solid 1px #aaa;
+}
 #notification {
     position: absolute;
     bottom: 10px;

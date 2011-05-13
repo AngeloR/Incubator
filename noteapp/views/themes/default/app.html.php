@@ -152,12 +152,12 @@
             <a href="#" id="preview">Preview</a>
             <form name="note" id="note" action="<?php echo url_for('/notes'); ?>" method="post">
                 <input type="hidden" name="note-id" id="note-id" value="">
-                <input type="text" name="note-title" id="note-title" placeholder="Title" class="note">
+                <input type="text" name="note-title" id="note-title" placeholder="Title" class="note" tabindex="1">
                 <div id="note-display"></div>
-                <textarea id="note-text" class="note" name="note-text" rows="40"></textarea>
+                <textarea id="note-text" class="note" name="note-text" rows="40" tabindex="2"></textarea>
                 
-                <button type="submit" name="save" id="save" class="blue" disabled="disabled">Save This Note</button>
-                <button type="submit" name="delete" id="delete" class="red" disabled="disabled">Delete This Note</button>
+                <button type="submit" name="save" id="save" class="blue" disabled="disabled" tabindex="3">Save This Note</button>
+                <button type="submit" name="delete" id="delete" class="red" disabled="disabled" tabindex="4">Delete This Note</button>
             </form>
             
             <div id="preview-area"></div>
